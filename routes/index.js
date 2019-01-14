@@ -6,7 +6,8 @@ const functions = require('firebase-functions');
 
 // admin.initializeApp(functions.config().firebase);
 
-var serviceAccount = require('../Config/photo-op-credentials.json');
+// var serviceAccount = require('../Config/photo-op-credentials.json');
+var serviceAccount = process.env.FIREBASE_CONFIG;
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),

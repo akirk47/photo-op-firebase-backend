@@ -10,7 +10,7 @@ const functions = require('firebase-functions');
 var serviceAccount = process.env.FIREBASE_CONFIG;
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.cert(JSON.parse(serviceAccount)),
   databaseURL: 'https://photo-op-firebase.firebaseio.com'
 });
 

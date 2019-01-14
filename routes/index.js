@@ -1,10 +1,17 @@
 var express = require('express');
 var router = express.Router();
-var firebase = require("../Config/firebase");
+var firebase = require('firebase');
 const admin = require('firebase-admin');
 const functions = require('firebase-functions');
 
-admin.initializeApp(functions.config().firebase);
+// admin.initializeApp(functions.config().firebase);
+
+var serviceAccount = require('../Config/photo-op-credentials.json');
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: 'https://photo-op-firebase.firebaseio.com'
+});
 
 var db = admin.firestore();
 
@@ -14,14 +21,17 @@ var db = admin.firestore();
 // });
 
 router.post('/signup', function(req, res, next) {
-  var docRef = db.collection('userInfo').doc(req.body.email);
-
-  var setAda = docRef.set({
-    first: 'Ada',
-    last: 'Lovelace',
-    born: 1815
-  });
-  res.json({success: true});
+  try{
+    var docRef = db.collection('userInfo').doc(req.body.email).set({
+      email: req.body.email,
+      phoneNumber: req.body.phoneNumber,
+      username: req.body.username
+    })
+    res.send({success: true});
+  }
+  catch(e){
+    res.send({error: e});
+  }
 });
 
 module.exports = router;

@@ -39,7 +39,7 @@ router.post('/check', function(req, res ,next){
   db.collection("userInfo").where("phoneNumber", "==", req.body.phoneNumber)
     .get()
     .then(function(querySnapshot) {
-        console.log(querySnapshot);
+        res.send({user: querySnapshot});
     })
     .catch(function(error) {
         console.log("Error getting documents: ", error);

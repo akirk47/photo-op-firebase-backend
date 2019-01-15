@@ -6,11 +6,12 @@ const functions = require('firebase-functions');
 
 // admin.initializeApp(functions.config().firebase);
 
-// var serviceAccount = require('../Config/photo-op-credentials.json');
+ // var serviceAccount = require('../Config/photo-op-credentials.json');
 var serviceAccount = process.env.FIREBASE_CONFIG;
 
 admin.initializeApp({
-  credential: admin.credential.cert(JSON.parse(serviceAccount)),
+   credential: admin.credential.cert(JSON.parse(serviceAccount)),
+  // credential: admin.credential.cert(serviceAccount),
   databaseURL: 'https://photo-op-firebase.firebaseio.com'
 });
 
@@ -39,7 +40,21 @@ router.post('/check', function(req, res ,next){
   db.collection("userInfo").where("phoneNumber", "==", req.body.phoneNumber)
     .get()
     .then(function(querySnapshot) {
-        res.send({user: querySnapshot});
+      if(querySnapshot.docs.length<1){
+        db.collection("userInfo").where("username", "==", req.body.username)
+          .get()
+          .then(function(querySnapshot){
+            if(querySnapshot.docs.length<1){
+              res.send({user:false}); //username and phoneNumber not taken
+            }
+            else{
+              res.send({user: true, message: "username"})
+            }
+          })
+      }
+      else{
+        res.send({user: true, message: "phoneNumber"})
+      }
     })
     .catch(function(error) {
         console.log("Error getting documents: ", error);

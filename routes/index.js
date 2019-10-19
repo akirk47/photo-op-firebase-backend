@@ -29,21 +29,27 @@ var db = admin.firestore();
 //   res.json({success: "this is working"});
 // });
 
-router.post('/signup', function(req, res, next) {
+router.get('/sessions/:email', function(req, res, next) {
   try{
-    var docRef = db.collection('userInfo').doc(req.body.email).set({
-      email: req.body.email,
-      phoneNumber: req.body.phoneNumber,
-      username: req.body.username
+    db.collection('userInfo').doc(req.params.email).get()
+    .then(doc => {
+      if (!doc.exists) {
+        res.send({data: false});
+      } else {
+        res.send({data: doc.data() });
+      }
     })
-    res.send({success: true});
+    .catch(err => {
+      console.log('Error getting document', err);
+    });
+    
   }
   catch(e){
     res.send({error: e});
   }
 });
 
-router.post('/addSession', function(req, res ,next){
+router.post('/addSession', function(req, res ,next){ // need email, time, emg, min, max
   try{
     db.collection("userInfo").doc(req.body.email).set({
         [req.body.time]: {
